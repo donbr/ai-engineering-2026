@@ -2,6 +2,13 @@
 
 Not the official AI Makerspace curriculum, but guided by it.  Created to provide students a roadmap and understanding of the general concepts at the start of the course.
 
+## What's next
+
+Some additional key documents that I need to add as reference and ensure they are incorporated effectively are:
+
+- [Langchain VS LangGraph VS DeepAgents](https://docs.langchain.com/oss/python/concepts/products)
+- [LangChain Memory:  Short VS Long Term](https://docs.langchain.com/oss/python/concepts/memory)
+
 ---
 
 ## Course Overview
