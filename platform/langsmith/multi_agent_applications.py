@@ -1,57 +1,5 @@
 # %% [markdown]
 # # Multi-Agent Applications: Building Agent Teams with LangGraph
-#
-# In this notebook, we'll explore **multi-agent systems** - applications where multiple specialized agents collaborate to solve complex tasks. We'll build on our LangGraph foundation from Session 4 and create agent teams for our Personal Wellness Assistant.
-#
-# **Learning Objectives:**
-# - Understand when and why to use multi-agent systems
-# - Master the Supervisor pattern for orchestrating agent teams
-# - Implement Agent Handoffs for dynamic task routing
-# - Use Tavily Search for web research capabilities
-# - Apply context engineering principles to optimize agent performance
-# - Visualize and debug multi-agent systems with LangSmith
-#
-# ## Table of Contents:
-#
-# - **Breakout Room #1:** Multi-Agent Fundamentals & Supervisor Pattern
-#   - Task 1: Dependencies & Environment Setup
-#   - Task 2: Understanding Multi-Agent Systems
-#   - Task 3: Building a Supervisor Agent Pattern
-#   - Task 4: Adding Tavily Search for Web Research
-#   - Question #1 & Question #2
-#   - Activity #1: Add a Custom Specialist Agent
-#
-# - **Breakout Room #2:** Handoffs & Context Engineering
-#   - Task 5: Agent Handoffs Pattern
-#   - Task 6: Building a Wellness Agent Team
-#   - Task 7: Context Engineering & Optimization
-#   - Task 8: Visualizing and Debugging with LangSmith
-#   - Question #3 & Question #4
-#   - Activity #2: Implement Hierarchical Teams
-
-# %% [markdown]
-# ---
-# # 🤝 Breakout Room #1
-# ## Multi-Agent Fundamentals & Supervisor Pattern
-
-# %% [markdown]
-# ## Task 1: Dependencies & Environment Setup
-#
-# Before we begin, make sure you have:
-#
-# 1. **API Keys** for:
-#    - OpenAI (for GPT-5.2 supervisor and GPT-4o-mini specialist agents)
-#    - Tavily (free tier at [tavily.com](https://www.tavily.com/))
-#    - LangSmith (optional, for tracing)
-#
-# 2. **Dependencies installed** via `uv sync`
-#
-# **Models Used:**
-# - **GPT-5.2**: Supervisor/orchestrator agents (better reasoning for routing decisions)
-# - **GPT-4o-mini**: Specialist agents (cost-effective for domain-specific tasks)
-#
-# **Documentation:**
-# - [Tavily Search API](https://docs.tavily.com/)
 
 # %%
 # Core imports
@@ -95,7 +43,7 @@ else:
 from langchain_openai import ChatOpenAI
 
 # Supervisor model - better reasoning for routing and orchestration
-supervisor_llm = ChatOpenAI(model="gpt-5.2", temperature=0)
+supervisor_llm = ChatOpenAI(model="gpt-5", temperature=0)
 
 # Specialist model - cost-effective for domain-specific tasks
 specialist_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
@@ -111,68 +59,6 @@ specialist_response = specialist_llm.invoke(
 
 print(f"Supervisor (GPT-5.2): {supervisor_response.content}")
 print(f"Specialist (GPT-4o-mini): {specialist_response.content}")
-
-# %% [markdown]
-# ## Task 2: Understanding Multi-Agent Systems
-#
-# ### When to Use Multi-Agent Systems
-#
-# Before building multi-agent systems, ask yourself:
-#
-# > **"Do I really need several specialized dynamic reasoning machines collaborating to solve this task more effectively than a single agent could?"**
-#
-# Multi-agent systems are useful when:
-# 1. **Tool/responsibility grouping**: Different tasks require different expertise
-# 2. **Prompt separation**: Different agents need different instructions/few-shot examples
-# 3. **Piecewise optimization**: Easier to improve individual components
-#
-# ### Key Multi-Agent Patterns
-#
-# | Pattern | Description | Use Case |
-# |---------|-------------|----------|
-# | **Supervisor** | Central orchestrator routes to specialist agents | Task delegation, quality control |
-# | **Handoffs** | Agents transfer control to each other | Conversation flows, expertise routing |
-# | **Hierarchical** | Supervisors manage teams of agents | Large-scale systems, departments |
-# | **Network/Swarm** | Agents communicate freely | Collaborative problem-solving |
-#
-# ### Context Engineering Principles
-#
-# From leading practitioners:
-#
-# - **Dex Horthy (12-Factor Agents)**: "Own your context window and treat it like prime real estate"
-# - **swyx (Agent Engineering)**: "Agent reliability = great context construction"
-# - **Chroma (Context Rot)**: "Longer ≠ better when it comes to context"
-#
-# **Documentation:**
-# - [Building Effective Agents (Anthropic)](https://www.anthropic.com/engineering/building-effective-agents)
-# - [Don't Build Multi-Agents (Cognition)](https://cognition.ai/blog/dont-build-multi-agents)
-# - [12-Factor Agents](https://github.com/humanlayer/12-factor-agents)
-
-# %% [markdown]
-# ## Task 3: Building a Supervisor Agent Pattern
-#
-# The **Supervisor Pattern** uses a central agent to:
-# 1. Analyze incoming requests
-# 2. Route to the appropriate specialist agent
-# 3. Aggregate and refine responses
-#
-# ```
-#                     ┌─────────────────┐
-#                     │   Supervisor    │
-#                     │   (Orchestrator)│
-#                     └────────┬────────┘
-#                              │
-#            ┌─────────────────┼─────────────────┐
-#            │                 │                 │
-#            ▼                 ▼                 ▼
-#     ┌────────────┐    ┌────────────┐    ┌────────────┐
-#     │  Exercise  │    │  Nutrition │    │   Sleep    │
-#     │   Agent    │    │   Agent    │    │   Agent    │
-#     └────────────┘    └────────────┘    └────────────┘
-# ```
-#
-# **Documentation:**
-# - [LangGraph Supervisor Tutorial](https://langchain-ai.github.io/langgraph/tutorials/multi_agent/agent_supervisor/)
 
 # %%
 # Import LangGraph and LangChain components
@@ -506,15 +392,6 @@ print("\nFinal Response:")
 print("=" * 50)
 print(response["messages"][-1].content)
 
-# %% [markdown]
-# ## Task 4: Adding Tavily Search for Web Research
-#
-# Sometimes the wellness knowledge base doesn't have the latest information. Let's add **Tavily Search** to allow agents to search the web for current information.
-#
-# **Documentation:**
-# - [Tavily Search Tool](https://python.langchain.com/docs/integrations/tools/tavily_search/)
-# - [Tavily API Docs](https://docs.tavily.com/)
-
 # %%
 # Create a Tavily search tool (using updated langchain-tavily package)
 from langchain_tavily import TavilySearch
@@ -597,39 +474,6 @@ response = research_agent.invoke(
 print("\nResearch Agent Response:")
 print(response["messages"][-1].content)
 
-# %% [markdown]
-# ---
-# ## ❓ Question #1:
-#
-# In the Supervisor pattern, the supervisor routes requests to specialist agents. What are the **advantages** and **disadvantages** of having agents loop back to the supervisor after responding, versus having them respond directly to the user?
-#
-# ##### Answer:
-# *Your answer here*
-
-# %% [markdown]
-# ## ❓ Question #2:
-#
-# We added Tavily web search alongside the knowledge base. In what scenarios would you want to **restrict** an agent to only use the knowledge base (no web search)? What are the trade-offs between freshness and reliability?
-#
-# ##### Answer:
-# *Your answer here*
-
-# %% [markdown]
-# ---
-# ## 🏗️ Activity #1: Add a Custom Specialist Agent
-#
-# Add a new specialist agent to the supervisor system. Ideas:
-# - **Habits Agent**: Helps with habit formation and routines
-# - **Hydration Agent**: Focuses on water intake and hydration
-# - **Lifestyle Agent**: Addresses work-life balance and digital wellness
-#
-# Requirements:
-# 1. Create a specialized search tool for your agent's domain
-# 2. Create the specialist agent with an appropriate system prompt
-# 3. Add the agent to the supervisor graph
-# 4. Update the routing logic
-# 5. Test with relevant questions
-
 # %%
 ### YOUR CODE HERE ###
 
@@ -647,30 +491,6 @@ def search_my_domain(query: str) -> str:
 
 # Step 4: Test your new agent
 
-
-# %% [markdown]
-# ---
-# #  🤝 Breakout Room #2
-# ## Handoffs & Context Engineering
-
-# %% [markdown]
-# ## Task 5: Agent Handoffs Pattern
-#
-# The **Handoffs Pattern** allows agents to transfer control to each other based on the conversation context. Unlike the supervisor pattern, agents decide themselves when to hand off.
-#
-# ```
-#     User Question
-#          │
-#          ▼
-#     ┌─────────┐    "I need nutrition help"   ┌─────────┐
-#     │ Fitness │ ─────────────────────────────► Nutrition│
-#     │  Agent  │                               │  Agent  │
-#     └─────────┘ ◄───────────────────────────── └─────────┘
-#                  "Back to fitness questions"
-# ```
-#
-# **Documentation:**
-# - [LangGraph Agent Handoffs](https://langchain-ai.github.io/langgraph/how-tos/agent-handoffs/)
 
 # %%
 # Create handoff tools that agents can use to transfer control
@@ -950,15 +770,6 @@ print("FINAL RESPONSE:")
 print("=" * 50)
 print(response["messages"][-1].content)
 
-# %% [markdown]
-# ## Task 6: Building a Wellness Agent Team
-#
-# Now let's combine what we've learned to build a complete wellness team that can:
-# 1. Handle complex multi-domain questions
-# 2. Search both the knowledge base and the web
-# 3. Maintain conversation context
-# 4. Provide comprehensive wellness advice
-
 # %%
 # Create a unified wellness team with memory
 from langgraph.checkpoint.memory import MemorySaver
@@ -994,16 +805,6 @@ response2 = supervisor_with_memory.invoke(
 )
 print("\n[Turn 2 Response]:")
 print(response2["messages"][-1].content[:500])
-
-# %% [markdown]
-# ## Task 7: Context Engineering & Optimization
-#
-# As conversations grow, we need to manage context carefully. Key principles:
-#
-# 1. **Context Window as Prime Real Estate**: Only include what's necessary
-# 2. **Summarization**: Compress long conversations
-# 3. **Selective Retrieval**: Don't retrieve everything, just what's relevant
-# 4. **Context Rot**: More tokens doesn't mean better performance
 
 # %%
 # Implement a context summarization function (using GPT-4o-mini for cost efficiency)
@@ -1059,74 +860,6 @@ print(f"Optimized messages: {len(optimized)}")
 print("\nOptimized conversation:")
 for msg in optimized:
     print(f"  [{msg.type}]: {msg.content[:100]}...")
-
-# %% [markdown]
-# ---
-# ## ❓ Question #3:
-#
-# Compare the **Supervisor pattern** and the **Handoffs pattern** we implemented. What are the key differences in how routing decisions are made? When would you choose one pattern over the other?
-#
-# ##### Answer:
-# *Your answer here*
-
-# %% [markdown]
-# ## ❓ Question #4:
-#
-# We discussed "Context Rot" - the idea that longer context doesn't always mean better performance. How does this principle apply to multi-agent systems? What strategies can you use to manage context effectively across multiple agents?
-#
-# ##### Answer:
-# *Your answer here*
-
-# %% [markdown]
-# ---
-# ## 🏗️ Activity #2: Implement Hierarchical Teams
-#
-# Build a **Hierarchical Agent System** where a top-level supervisor manages multiple team supervisors, each with their own specialist agents.
-#
-# ### Requirements:
-#
-# 1. Create a **Wellness Director** (top-level supervisor using GPT-5.2) that:
-#    - Receives user questions and determines which team should handle it
-#    - Routes to either the "Physical Wellness Team" or "Mental Wellness Team"
-#    - Aggregates final responses from teams
-#
-# 2. Create two **Team Supervisors**:
-#    - **Physical Wellness Team Lead**: Manages Exercise Agent and Nutrition Agent
-#    - **Mental Wellness Team Lead**: Manages Sleep Agent and Stress Agent
-#
-# 3. Implement the hierarchical routing:
-#    - User question → Wellness Director → Team Lead → Specialist Agent → Response
-#
-# 4. Test with questions that require different teams:
-#    - "What exercises help with weight loss?" (Physical team)
-#    - "How can I improve my sleep when stressed?" (Mental team)
-#
-# ### Architecture:
-# ```
-#                     ┌─────────────────────┐
-#                     │  Wellness Director  │
-#                     │     (GPT-5.2)       │
-#                     └──────────┬──────────┘
-#                                │
-#               ┌────────────────┴────────────────┐
-#               │                                 │
-#               ▼                                 ▼
-#    ┌─────────────────────┐          ┌─────────────────────┐
-#    │  Physical Wellness  │          │  Mental Wellness    │
-#    │    Team Lead        │          │    Team Lead        │
-#    └──────────┬──────────┘          └──────────┬──────────┘
-#               │                                 │
-#        ┌──────┴──────┐                   ┌──────┴──────┐
-#        │             │                   │             │
-#        ▼             ▼                   ▼             ▼
-#   ┌─────────┐  ┌──────────┐        ┌─────────┐  ┌─────────┐
-#   │Exercise │  │Nutrition │        │  Sleep  │  │ Stress  │
-#   │  Agent  │  │  Agent   │        │  Agent  │  │  Agent  │
-#   └─────────┘  └──────────┘        └─────────┘  └─────────┘
-# ```
-#
-# **Documentation:**
-# - [LangGraph Hierarchical Teams](https://langchain-ai.github.io/langgraph/tutorials/multi_agent/hierarchical_agent_teams/)
 
 # %%
 ### YOUR CODE HERE ###
@@ -1204,26 +937,3 @@ Route to the appropriate team based on the user's question.""",
 # test_question = "What exercises help with weight loss?"
 # response = hierarchical_graph.invoke({"messages": [HumanMessage(content=test_question)]})
 # print(response["messages"][-1].content)
-
-# %% [markdown]
-# ---
-# ## Summary
-#
-# In this session, we:
-#
-# 1. **Understood Multi-Agent Systems**: When to use them and key patterns
-# 2. **Built a Supervisor Pattern**: Central orchestrator routing to specialists
-# 3. **Implemented Agent Handoffs**: Agents transferring control to each other
-# 4. **Added Web Search**: Tavily for current information alongside knowledge base
-# 5. **Applied Context Engineering**: Managing context for optimal performance
-#
-# ### Key Takeaways:
-#
-# - **Don't over-engineer**: Only add agents when you truly need specialization
-# - **Context is key**: Manage your context window carefully
-# - **Patterns matter**: Choose the right pattern for your use case
-#
-# **Further Reading:**
-# - [Building Effective Agents (Anthropic)](https://www.anthropic.com/engineering/building-effective-agents)
-# - [Don't Build Multi-Agents (Cognition)](https://cognition.ai/blog/dont-build-multi-agents)
-# - [12-Factor Agents](https://github.com/humanlayer/12-factor-agents)
